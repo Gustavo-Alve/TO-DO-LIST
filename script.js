@@ -1,11 +1,20 @@
-const { createElement } = require("react");
 
-const form = document.querySelector('form');
+const form = document.querySelector('form')
 
-form.addEventListener('submit',function(e) {
+form.addEventListener('submit', function(e) {
     e.preventDefault();
-    const input = document.querySelector('input').value;
-    const output = document.getElementById('out-put');
-    output.innerHTML = `<li>${input}</li>`;
+    const inputValor = document.querySelector('input').value;
+    let li = document.createElement('li')
+    li.innerHTML = inputValor  +'<span class = "delete" onclick="deleteTask(this)">🗑️</span>' + '<span class = "edit" onclick="editTask(this)">✍</span>';
+    document.querySelector('ul').appendChild(li);
+    inputValor = '';
+    
 })
 
+function deleteTask(li) {
+   li.parentElement.remove();
+}
+
+function editTask (li) {
+    li.parentElement.editTask()
+}
