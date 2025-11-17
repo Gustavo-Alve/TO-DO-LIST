@@ -1,19 +1,63 @@
-import sqlite3 from 'sqlite3'; //importa o sqlite para usar como banco
-import {open} from 'sqlite'; //importa a funçao abrir
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 
-async function createTables (task, date) {
-    const db = await open ({
-        filename : './banco.db',
-        driver : sqlite3.Database,
-    })
+// Conexão com o banco (vamos usar em várias funções)
+let db;
 
-    //parte onde executo comanndo sql
-    db.run ('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, task TEXT, date DATETIME DEFAULT CURRENT_TIMESTAMP)');
-    db.run ('INSERT INTO tasks (task, date) VALUES (?,?)',[ //esses (?,?) serve para segurança
-        task,
-        date,
-    ]);
-    db.run ('DELETE FROM tasks')
+async function initDatabase() {
+    db = await open({
+        filename: './banco.db',
+        driver: sqlite3.Database,
+    });
+
+    // Criar tabela com nível de urgência
+    await db.run(`
+        CREATE TABLE IF NOT EXISTS tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            task TEXT NOT NULL,
+            urgency_level TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
 }
 
-createTables();
+// Função para adicionar task
+async function addTask(taskText, urgencyLevel) {
+    try {
+        const result = await db.run(
+            'INSERT INTO tasks (task, urgency_level) VALUES (?, ?)',
+            [taskText, urgencyLevel]
+        );
+        console.log('Task adicionada com ID:', result.lastID);
+        return result.lastID;
+    } catch (error) {
+        console.error('Erro ao adicionar task:', error);
+    }
+}
+
+// Função para buscar todas as tasks
+async function getAllTasks() {
+    try {
+        const tasks = await db.all('SELECT * FROM tasks ORDER BY created_at DESC');
+        return tasks;
+    } catch (error) {
+        console.error('Erro ao buscar tasks:', error);
+        return [];
+    }
+}
+
+// Função para deletar task
+async function deleteTask(taskId) {
+    try {
+        await db.run('DELETE FROM tasks WHERE id = ?', [taskId]);
+        console.log('Task deletada:', taskId);
+    } catch (error) {
+        console.error('Erro ao deletar task:', error);
+    }
+}
+
+// Inicializar o banco
+initDatabase();
+
+// Exportar as funções para usar no frontend
+export { addTask, getAllTasks, deleteTask };

@@ -10,16 +10,31 @@
 
         <h1 class="title">TO-DO-LIST</h1>
 
-        <p class="sub-title">Task For Today</p>
+        <p class="sub-title">Task For Today</p> 
         <form class="container">
             <input class="task" type="text" placeholder="Add a new task">
-            <input id="date" type="date">
-            <button type="submit">Add Task</button>
         </form> 
-        
-        <ul>
-        </ul>
-    
+        <div class="levels">
+            <button onclick="green()" class="range">🟢</button>
+            <button onclick="yellow()" class="range">🟡</button>
+            <button onclick="red()" class="range">🔴</button>
+        </div>
+
+        <div class="options">
+            <div class="hight">
+                <ul id="red">
+                </ul>
+            </div>
+
+            <div class="medium">
+                <ul id="yellow">
+                </ul>
+            </div>
+            <div class="lower">
+                <ul id="green">
+                </ul>
+            </div>
+        </div>
     </body>
     <script src="./script.js"></script>
 </html>
